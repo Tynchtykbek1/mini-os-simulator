@@ -1,6 +1,6 @@
 from cpu_scheduling import fcfs_schedule, round_robin_schedule, sjf_schedule
 from models import Process
-from page_replacement import fifo_page_replacement
+from page_replacement import fifo_page_replacement, lru_page_replacement
 
 
 def copy_processes(processes):
@@ -62,13 +62,15 @@ def print_averages(processes):
     print(f"Average turnaround time: {average_turnaround_time:.2f}")
 
 
-def print_page_replacement_results(reference_string, number_of_frames, result):
+def print_page_replacement_header(reference_string, number_of_frames):
     print("\nPage Replacement")
     print("================")
     print(f"Reference string: {reference_string}")
     print(f"Number of frames: {number_of_frames}")
 
-    print("\nFIFO Step-by-Step Table:")
+
+def print_page_replacement_results(algorithm_name, result, number_of_frames):
+    print(f"\n{algorithm_name} Step-by-Step Table:")
     print("Step | Page | Frames      | Result | Replaced")
     print("-" * 49)
 
@@ -128,8 +130,11 @@ def main():
     reference_string = [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2]
     number_of_frames = 3
     fifo_result = fifo_page_replacement(reference_string, number_of_frames)
+    lru_result = lru_page_replacement(reference_string, number_of_frames)
 
-    print_page_replacement_results(reference_string, number_of_frames, fifo_result)
+    print_page_replacement_header(reference_string, number_of_frames)
+    print_page_replacement_results("FIFO", fifo_result, number_of_frames)
+    print_page_replacement_results("LRU", lru_result, number_of_frames)
 
 
 if __name__ == "__main__":
