@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini OS Simulator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1>Mini OS Simulator</h1>
+
+        <section>
+            <h2>CPU Scheduling</h2>
+            <form method="post">
+                <input type="hidden" name="form_type" value="cpu">
+
+                <label for="processes_text">Processes</label>
+                <textarea id="processes_text" name="processes_text" rows="6">{{ processes_text }}</textarea>
+                <p class="hint">One process per line: pid arrival_time burst_time</p>
+
+                <label for="time_quantum">Round Robin time quantum</label>
+                <input id="time_quantum" name="time_quantum" type="number" min="1" value="{{ time_quantum }}">
+
+                <button type="submit">Run CPU Scheduling</button>
+            </form>
+
+            {% if cpu_error %}
+                <p class="error">{{ cpu_error }}</p>
+            {% endif %}
+
+            {% if cpu_results %}
+                {% for algorithm in cpu_results %}
+                    <article class="result-block">
+                        <h3>{{ algorithm.name }}</h3>
+
+                        <h4>Gantt Chart</h4>
+                        <div class="gantt-chart">
+                            {% for item in algorithm.gantt_chart %}
+                                <div class="gantt-item">
+                                    <strong>P{{ item.pid }}</strong>
+                                    <span>{{ item.start_time }}-{{ item.end_time }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <h4>Process Table</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>PID</th>
+                                    <th>Arrival</th>
+                                    <th>Burst</th>
+                                    <th>Start</th>
+                                    <th>Completion</th>
+                                    <th>Waiting</th>
+                                    <th>Turnaround</th>
+                                    <th>Response</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for process in algorithm.processes %}
+                                    <tr>
+                                        <td>{{ process.pid }}</td>
+                                        <td>{{ process.arrival_time }}</td>
+                                        <td>{{ process.burst_time }}</td>
+                                        <td>{{ process.start_time }}</td>
+                                        <td>{{ process.completion_time }}</td>
+                                        <td>{{ process.waiting_time }}</td>
+                                        <td>{{ process.turnaround_time }}</td>
+                                        <td>{{ process.response_time }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <p>Average waiting time: {{ "%.2f"|format(algorithm.averages.waiting_time) }}</p>
+                        <p>Average turnaround time: {{ "%.2f"|format(algorithm.averages.turnaround_time) }}</p>
+                    </article>
+                {% endfor %}
+            {% endif %}
+        </section>
+
+        <section>
+            <h2>Page Replacement</h2>
+            <form method="post">
+                <input type="hidden" name="form_type" value="page">
+
+                <label for="reference_string">Reference string</label>
+                <input id="reference_string" name="reference_string" type="text" value="{{ reference_string }}">
+                <p class="hint">Page numbers separated by spaces.</p>
+
+                <label for="number_of_frames">Number of frames</label>
+                <input id="number_of_frames" name="number_of_frames" type="number" min="1" value="{{ number_of_frames }}">
+
+                <button type="submit">Run Page Replacement</button>
+            </form>
+
+            {% if page_error %}
+                <p class="error">{{ page_error }}</p>
+            {% endif %}
+
+            {% if page_results %}
+                {% for algorithm in page_results %}
+                    <article class="result-block">
+                        <h3>{{ algorithm.name }}</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Step</th>
+                                    <th>Page</th>
+                                    <th>Frames</th>
+                                    <th>Result</th>
+                                    <th>Replaced</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for step in algorithm.result.steps %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ step.page }}</td>
+                                        <td>[{{ step.frames|join(", ") }}]</td>
+                                        <td>{{ step.result }}</td>
+                                        <td>{{ step.replaced_page if step.replaced_page is not none else "-" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <p>Total page faults: {{ algorithm.result.page_faults }}</p>
+                        <p>Total page hits: {{ algorithm.result.page_hits }}</p>
+                    </article>
+                {% endfor %}
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>
