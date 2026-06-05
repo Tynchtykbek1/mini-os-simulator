@@ -1,6 +1,10 @@
 from cpu_scheduling import fcfs_schedule, round_robin_schedule, sjf_schedule
 from models import Process
-from page_replacement import fifo_page_replacement, lru_page_replacement
+from page_replacement import (
+    fifo_page_replacement,
+    lru_page_replacement,
+    optimal_page_replacement,
+)
 
 
 def copy_processes(processes):
@@ -131,10 +135,12 @@ def main():
     number_of_frames = 3
     fifo_result = fifo_page_replacement(reference_string, number_of_frames)
     lru_result = lru_page_replacement(reference_string, number_of_frames)
+    optimal_result = optimal_page_replacement(reference_string, number_of_frames)
 
     print_page_replacement_header(reference_string, number_of_frames)
     print_page_replacement_results("FIFO", fifo_result, number_of_frames)
     print_page_replacement_results("LRU", lru_result, number_of_frames)
+    print_page_replacement_results("Optimal", optimal_result, number_of_frames)
 
 
 if __name__ == "__main__":
