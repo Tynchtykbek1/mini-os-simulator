@@ -1,4 +1,4 @@
-from cpu_scheduling import fcfs_schedule, sjf_schedule
+from cpu_scheduling import fcfs_schedule, round_robin_schedule, sjf_schedule
 from models import Process
 
 
@@ -13,18 +13,25 @@ def copy_processes(processes):
     ]
 
 
-def print_schedule_results(algorithm_name, processes):
+def create_gantt_chart(processes):
+    return [
+        (process.pid, process.start_time, process.completion_time)
+        for process in processes
+    ]
+
+
+def print_schedule_results(algorithm_name, processes, gantt_chart=None):
     print(f"\n{algorithm_name}")
     print("=" * len(algorithm_name))
-    print_gantt_chart(processes)
+    print_gantt_chart(gantt_chart or create_gantt_chart(processes))
     print_process_table(processes)
     print_averages(processes)
 
 
-def print_gantt_chart(processes):
+def print_gantt_chart(gantt_chart):
     print("Gantt Chart:")
-    print(" | ".join(f"P{process.pid}" for process in processes))
-    print(" ".join(f"{process.start_time}-{process.completion_time}" for process in processes))
+    print(" | ".join(f"P{pid}" for pid, start_time, end_time in gantt_chart))
+    print(" ".join(f"{start_time}-{end_time}" for pid, start_time, end_time in gantt_chart))
 
 
 def print_process_table(processes):
@@ -55,6 +62,7 @@ def print_averages(processes):
 
 
 def main():
+    time_quantum = 4
     processes = [
         Process(pid=1, arrival_time=0, burst_time=5),
         Process(pid=2, arrival_time=2, burst_time=3),
@@ -64,9 +72,18 @@ def main():
 
     fcfs_processes = fcfs_schedule(copy_processes(processes))
     sjf_processes = sjf_schedule(copy_processes(processes))
+    rr_gantt_chart, rr_processes = round_robin_schedule(
+        copy_processes(processes),
+        time_quantum,
+    )
 
     print_schedule_results("FCFS Scheduling", fcfs_processes)
     print_schedule_results("SJF Scheduling", sjf_processes)
+    print_schedule_results(
+        f"Round Robin Scheduling (Time Quantum = {time_quantum})",
+        rr_processes,
+        rr_gantt_chart,
+    )
 
 
 if __name__ == "__main__":

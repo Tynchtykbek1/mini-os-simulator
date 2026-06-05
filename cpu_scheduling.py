@@ -56,3 +56,68 @@ def sjf_schedule(processes):
         remaining_processes.remove(current_process)
 
     return scheduled_processes
+
+
+def round_robin_schedule(processes, time_quantum):
+    if time_quantum <= 0:
+        raise ValueError("time_quantum must be greater than 0")
+
+    processes_by_arrival = sorted(processes, key=lambda process: process.arrival_time)
+    remaining_time = {
+        process.pid: process.burst_time
+        for process in processes_by_arrival
+    }
+    ready_queue = []
+    gantt_chart = []
+    completed_processes = []
+    started_pids = set()
+    current_time = 0
+    next_process_index = 0
+
+    while len(completed_processes) < len(processes_by_arrival):
+        while (
+            next_process_index < len(processes_by_arrival)
+            and processes_by_arrival[next_process_index].arrival_time <= current_time
+        ):
+            ready_queue.append(processes_by_arrival[next_process_index])
+            next_process_index += 1
+
+        if not ready_queue:
+            current_time = processes_by_arrival[next_process_index].arrival_time
+            continue
+
+        current_process = ready_queue.pop(0)
+
+        if current_process.pid not in started_pids:
+            current_process.start_time = current_time
+            current_process.response_time = (
+                current_process.start_time - current_process.arrival_time
+            )
+            started_pids.add(current_process.pid)
+
+        execution_time = min(time_quantum, remaining_time[current_process.pid])
+        start_time = current_time
+        current_time += execution_time
+        remaining_time[current_process.pid] -= execution_time
+        gantt_chart.append((current_process.pid, start_time, current_time))
+
+        while (
+            next_process_index < len(processes_by_arrival)
+            and processes_by_arrival[next_process_index].arrival_time <= current_time
+        ):
+            ready_queue.append(processes_by_arrival[next_process_index])
+            next_process_index += 1
+
+        if remaining_time[current_process.pid] > 0:
+            ready_queue.append(current_process)
+        else:
+            current_process.completion_time = current_time
+            current_process.turnaround_time = (
+                current_process.completion_time - current_process.arrival_time
+            )
+            current_process.waiting_time = (
+                current_process.turnaround_time - current_process.burst_time
+            )
+            completed_processes.append(current_process)
+
+    return gantt_chart, completed_processes
