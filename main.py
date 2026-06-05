@@ -107,15 +107,7 @@ def format_frames(frames, number_of_frames):
     return "[" + ", ".join(displayed_frames) + "]"
 
 
-def main():
-    time_quantum = 4
-    processes = [
-        Process(pid=1, arrival_time=0, burst_time=5),
-        Process(pid=2, arrival_time=2, burst_time=3),
-        Process(pid=3, arrival_time=4, burst_time=1),
-        Process(pid=4, arrival_time=8, burst_time=2),
-    ]
-
+def run_cpu_scheduling(processes, time_quantum):
     fcfs_processes = fcfs_schedule(copy_processes(processes))
     sjf_processes = sjf_schedule(copy_processes(processes))
     rr_gantt_chart, rr_processes = round_robin_schedule(
@@ -131,8 +123,8 @@ def main():
         rr_gantt_chart,
     )
 
-    reference_string = [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2]
-    number_of_frames = 3
+
+def run_page_replacement(reference_string, number_of_frames):
     fifo_result = fifo_page_replacement(reference_string, number_of_frames)
     lru_result = lru_page_replacement(reference_string, number_of_frames)
     optimal_result = optimal_page_replacement(reference_string, number_of_frames)
@@ -141,6 +133,107 @@ def main():
     print_page_replacement_results("FIFO", fifo_result, number_of_frames)
     print_page_replacement_results("LRU", lru_result, number_of_frames)
     print_page_replacement_results("Optimal", optimal_result, number_of_frames)
+
+
+def run_default_demo():
+    time_quantum = 4
+    processes = [
+        Process(pid=1, arrival_time=0, burst_time=5),
+        Process(pid=2, arrival_time=2, burst_time=3),
+        Process(pid=3, arrival_time=4, burst_time=1),
+        Process(pid=4, arrival_time=8, burst_time=2),
+    ]
+
+    run_cpu_scheduling(processes, time_quantum)
+
+    reference_string = [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2]
+    number_of_frames = 3
+
+    run_page_replacement(reference_string, number_of_frames)
+
+
+def run_custom_cpu_scheduling():
+    process_count = read_int("How many processes? ", minimum=1)
+    processes = []
+
+    for process_number in range(1, process_count + 1):
+        print(f"\nProcess {process_number}")
+        pid = read_int("PID: ")
+        arrival_time = read_int("arrival_time: ", minimum=0)
+        burst_time = read_int("burst_time: ", minimum=1)
+        processes.append(Process(pid=pid, arrival_time=arrival_time, burst_time=burst_time))
+
+    time_quantum = read_int("\nRound Robin time quantum: ", minimum=1)
+    run_cpu_scheduling(processes, time_quantum)
+
+
+def run_custom_page_replacement():
+    reference_string = read_reference_string()
+    number_of_frames = read_int("number_of_frames: ", minimum=1)
+
+    run_page_replacement(reference_string, number_of_frames)
+
+
+def read_int(prompt, minimum=None):
+    while True:
+        value = input(prompt).strip()
+
+        try:
+            number = int(value)
+        except ValueError:
+            print("Please enter a valid integer.")
+            continue
+
+        if minimum is not None and number < minimum:
+            print(f"Please enter a number greater than or equal to {minimum}.")
+            continue
+
+        return number
+
+
+def read_reference_string():
+    while True:
+        value = input("Reference string: ").strip()
+
+        if not value:
+            print("Reference string cannot be empty.")
+            continue
+
+        try:
+            return [int(page) for page in value.split()]
+        except ValueError:
+            print("Please enter page numbers separated by spaces.")
+
+
+def print_menu():
+    print("\nMini OS Simulator")
+    print("=================")
+    print("1. Run default demo")
+    print("2. Run CPU Scheduling with custom process input")
+    print("3. Run Page Replacement with custom input")
+    print("4. Exit")
+
+
+def main():
+    while True:
+        print_menu()
+        try:
+            choice = input("Choose an option: ").strip()
+        except EOFError:
+            print("\nExiting Mini OS Simulator.")
+            break
+
+        if choice == "1":
+            run_default_demo()
+        elif choice == "2":
+            run_custom_cpu_scheduling()
+        elif choice == "3":
+            run_custom_page_replacement()
+        elif choice == "4":
+            print("Exiting Mini OS Simulator.")
+            break
+        else:
+            print("Invalid option. Please choose 1, 2, 3, or 4.")
 
 
 if __name__ == "__main__":
