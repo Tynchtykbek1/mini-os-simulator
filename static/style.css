@@ -148,6 +148,38 @@ button:hover {
     font-size: 0.94rem;
 }
 
+.input-helper {
+    margin-top: 8px;
+    margin-bottom: 10px;
+}
+
+.input-helper p {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 0.94rem;
+}
+
+.format-grid {
+    display: inline-grid;
+    grid-template-columns: repeat(3, max-content);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.format-grid span {
+    padding: 7px 10px;
+    border-left: 1px solid var(--border);
+    color: #334155;
+}
+
+.format-grid span:first-child {
+    border-left: 0;
+}
+
 code,
 .monospace {
     font-family: Consolas, "Courier New", monospace;
@@ -287,6 +319,17 @@ th {
 
     .gantt-item {
         min-width: 74px;
+    }
+
+    .format-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        width: 100%;
+    }
+
+    .format-grid span {
+        padding: 7px 6px;
+        text-align: center;
     }
 
     .metrics {

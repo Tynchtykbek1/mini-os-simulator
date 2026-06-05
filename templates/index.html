@@ -24,13 +24,21 @@
                 <input type="hidden" name="form_type" value="cpu">
 
                 <label for="processes_text">Processes</label>
+                <div class="input-helper">
+                    <p>Each row represents one process.</p>
+                    <div class="format-grid" aria-label="CPU process row format">
+                        <span>PID</span>
+                        <span>Arrival Time</span>
+                        <span>Burst Time</span>
+                    </div>
+                </div>
                 <textarea
                     id="processes_text"
                     name="processes_text"
                     rows="6"
                     placeholder="1 0 5&#10;2 2 3&#10;3 4 1"
                 >{{ processes_text }}</textarea>
-                <p class="hint">CPU process format: <code>pid arrival_time burst_time</code></p>
+                <p class="hint">Enter one row per process, for example: <code>1 0 5</code></p>
 
                 <label for="time_quantum">Round Robin time quantum</label>
                 <input
