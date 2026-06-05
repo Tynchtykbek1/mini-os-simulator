@@ -1,5 +1,24 @@
-from cpu_scheduling import fcfs_schedule
+from cpu_scheduling import fcfs_schedule, sjf_schedule
 from models import Process
+
+
+def copy_processes(processes):
+    return [
+        Process(
+            pid=process.pid,
+            arrival_time=process.arrival_time,
+            burst_time=process.burst_time,
+        )
+        for process in processes
+    ]
+
+
+def print_schedule_results(algorithm_name, processes):
+    print(f"\n{algorithm_name}")
+    print("=" * len(algorithm_name))
+    print_gantt_chart(processes)
+    print_process_table(processes)
+    print_averages(processes)
 
 
 def print_gantt_chart(processes):
@@ -43,11 +62,11 @@ def main():
         Process(pid=4, arrival_time=8, burst_time=2),
     ]
 
-    scheduled_processes = fcfs_schedule(processes)
+    fcfs_processes = fcfs_schedule(copy_processes(processes))
+    sjf_processes = sjf_schedule(copy_processes(processes))
 
-    print_gantt_chart(scheduled_processes)
-    print_process_table(scheduled_processes)
-    print_averages(scheduled_processes)
+    print_schedule_results("FCFS Scheduling", fcfs_processes)
+    print_schedule_results("SJF Scheduling", sjf_processes)
 
 
 if __name__ == "__main__":
