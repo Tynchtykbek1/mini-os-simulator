@@ -1,5 +1,6 @@
 from cpu_scheduling import fcfs_schedule, round_robin_schedule, sjf_schedule
 from models import Process
+from page_replacement import fifo_page_replacement
 
 
 def copy_processes(processes):
@@ -61,6 +62,45 @@ def print_averages(processes):
     print(f"Average turnaround time: {average_turnaround_time:.2f}")
 
 
+def print_page_replacement_results(reference_string, number_of_frames, result):
+    print("\nPage Replacement")
+    print("================")
+    print(f"Reference string: {reference_string}")
+    print(f"Number of frames: {number_of_frames}")
+
+    print("\nFIFO Step-by-Step Table:")
+    print("Step | Page | Frames      | Result | Replaced")
+    print("-" * 49)
+
+    for step_number, step in enumerate(result["steps"], start=1):
+        frames = format_frames(step["frames"], number_of_frames)
+        replaced_page = (
+            str(step["replaced_page"])
+            if step["replaced_page"] is not None
+            else "-"
+        )
+
+        print(
+            f"{step_number:>4} | "
+            f"{step['page']:>4} | "
+            f"{frames:<11} | "
+            f"{step['result']:<6} | "
+            f"{replaced_page:>8}"
+        )
+
+    print(f"\nTotal page faults: {result['page_faults']}")
+    print(f"Total page hits: {result['page_hits']}")
+
+
+def format_frames(frames, number_of_frames):
+    displayed_frames = [str(page) for page in frames]
+
+    while len(displayed_frames) < number_of_frames:
+        displayed_frames.append("-")
+
+    return "[" + ", ".join(displayed_frames) + "]"
+
+
 def main():
     time_quantum = 4
     processes = [
@@ -84,6 +124,12 @@ def main():
         rr_processes,
         rr_gantt_chart,
     )
+
+    reference_string = [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2]
+    number_of_frames = 3
+    fifo_result = fifo_page_replacement(reference_string, number_of_frames)
+
+    print_page_replacement_results(reference_string, number_of_frames, fifo_result)
 
 
 if __name__ == "__main__":
