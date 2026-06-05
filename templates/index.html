@@ -8,19 +8,39 @@
 </head>
 <body>
     <main class="container">
-        <h1>Mini OS Simulator</h1>
+        <header class="page-header">
+            <p class="eyebrow">University Operating Systems Project</p>
+            <h1>Mini OS Simulator</h1>
+            <p class="subtitle">CPU Scheduling and Page Replacement Simulator</p>
+        </header>
 
-        <section>
-            <h2>CPU Scheduling</h2>
-            <form method="post">
+        <section class="card">
+            <div class="section-header">
+                <h2>CPU Scheduling</h2>
+                <p>Run FCFS, SJF, and Round Robin using the same process list.</p>
+            </div>
+
+            <form method="post" class="form-panel">
                 <input type="hidden" name="form_type" value="cpu">
 
                 <label for="processes_text">Processes</label>
-                <textarea id="processes_text" name="processes_text" rows="6">{{ processes_text }}</textarea>
-                <p class="hint">One process per line: pid arrival_time burst_time</p>
+                <textarea
+                    id="processes_text"
+                    name="processes_text"
+                    rows="6"
+                    placeholder="1 0 5&#10;2 2 3&#10;3 4 1"
+                >{{ processes_text }}</textarea>
+                <p class="hint">CPU process format: <code>pid arrival_time burst_time</code></p>
 
                 <label for="time_quantum">Round Robin time quantum</label>
-                <input id="time_quantum" name="time_quantum" type="number" min="1" value="{{ time_quantum }}">
+                <input
+                    id="time_quantum"
+                    name="time_quantum"
+                    type="number"
+                    min="1"
+                    value="{{ time_quantum }}"
+                    placeholder="4"
+                >
 
                 <button type="submit">Run CPU Scheduling</button>
             </form>
@@ -30,68 +50,91 @@
             {% endif %}
 
             {% if cpu_results %}
-                {% for algorithm in cpu_results %}
-                    <article class="result-block">
-                        <h3>{{ algorithm.name }}</h3>
+                <div class="output-panel">
+                    {% for algorithm in cpu_results %}
+                        <article class="result-block">
+                            <h3>{{ algorithm.name }}</h3>
 
-                        <h4>Gantt Chart</h4>
-                        <div class="gantt-chart">
-                            {% for item in algorithm.gantt_chart %}
-                                <div class="gantt-item">
-                                    <strong>P{{ item.pid }}</strong>
-                                    <span>{{ item.start_time }}-{{ item.end_time }}</span>
-                                </div>
-                            {% endfor %}
-                        </div>
-
-                        <h4>Process Table</h4>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>PID</th>
-                                    <th>Arrival</th>
-                                    <th>Burst</th>
-                                    <th>Start</th>
-                                    <th>Completion</th>
-                                    <th>Waiting</th>
-                                    <th>Turnaround</th>
-                                    <th>Response</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for process in algorithm.processes %}
-                                    <tr>
-                                        <td>{{ process.pid }}</td>
-                                        <td>{{ process.arrival_time }}</td>
-                                        <td>{{ process.burst_time }}</td>
-                                        <td>{{ process.start_time }}</td>
-                                        <td>{{ process.completion_time }}</td>
-                                        <td>{{ process.waiting_time }}</td>
-                                        <td>{{ process.turnaround_time }}</td>
-                                        <td>{{ process.response_time }}</td>
-                                    </tr>
+                            <h4>Gantt Chart</h4>
+                            <div class="gantt-chart monospace">
+                                {% for item in algorithm.gantt_chart %}
+                                    <div class="gantt-item">
+                                        <strong>P{{ item.pid }}</strong>
+                                        <span>{{ item.start_time }}-{{ item.end_time }}</span>
+                                    </div>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            </div>
 
-                        <p>Average waiting time: {{ "%.2f"|format(algorithm.averages.waiting_time) }}</p>
-                        <p>Average turnaround time: {{ "%.2f"|format(algorithm.averages.turnaround_time) }}</p>
-                    </article>
-                {% endfor %}
+                            <h4>Process Table</h4>
+                            <div class="table-wrapper monospace">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>PID</th>
+                                            <th>Arrival</th>
+                                            <th>Burst</th>
+                                            <th>Start</th>
+                                            <th>Completion</th>
+                                            <th>Waiting</th>
+                                            <th>Turnaround</th>
+                                            <th>Response</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for process in algorithm.processes %}
+                                            <tr>
+                                                <td>{{ process.pid }}</td>
+                                                <td>{{ process.arrival_time }}</td>
+                                                <td>{{ process.burst_time }}</td>
+                                                <td>{{ process.start_time }}</td>
+                                                <td>{{ process.completion_time }}</td>
+                                                <td>{{ process.waiting_time }}</td>
+                                                <td>{{ process.turnaround_time }}</td>
+                                                <td>{{ process.response_time }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="metrics">
+                                <p>Average waiting time: <strong>{{ "%.2f"|format(algorithm.averages.waiting_time) }}</strong></p>
+                                <p>Average turnaround time: <strong>{{ "%.2f"|format(algorithm.averages.turnaround_time) }}</strong></p>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
             {% endif %}
         </section>
 
-        <section>
-            <h2>Page Replacement</h2>
-            <form method="post">
+        <section class="card">
+            <div class="section-header">
+                <h2>Page Replacement</h2>
+                <p>Compare FIFO, LRU, and Optimal replacement on one reference string.</p>
+            </div>
+
+            <form method="post" class="form-panel">
                 <input type="hidden" name="form_type" value="page">
 
                 <label for="reference_string">Reference string</label>
-                <input id="reference_string" name="reference_string" type="text" value="{{ reference_string }}">
-                <p class="hint">Page numbers separated by spaces.</p>
+                <input
+                    id="reference_string"
+                    name="reference_string"
+                    type="text"
+                    value="{{ reference_string }}"
+                    placeholder="7 0 1 2 0 3 0 4 2 3"
+                >
+                <p class="hint">Page reference format: numbers separated by spaces</p>
 
                 <label for="number_of_frames">Number of frames</label>
-                <input id="number_of_frames" name="number_of_frames" type="number" min="1" value="{{ number_of_frames }}">
+                <input
+                    id="number_of_frames"
+                    name="number_of_frames"
+                    type="number"
+                    min="1"
+                    value="{{ number_of_frames }}"
+                    placeholder="3"
+                >
 
                 <button type="submit">Run Page Replacement</button>
             </form>
@@ -101,37 +144,43 @@
             {% endif %}
 
             {% if page_results %}
-                {% for algorithm in page_results %}
-                    <article class="result-block">
-                        <h3>{{ algorithm.name }}</h3>
+                <div class="output-panel">
+                    {% for algorithm in page_results %}
+                        <article class="result-block">
+                            <h3>{{ algorithm.name }}</h3>
 
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Step</th>
-                                    <th>Page</th>
-                                    <th>Frames</th>
-                                    <th>Result</th>
-                                    <th>Replaced</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for step in algorithm.result.steps %}
-                                    <tr>
-                                        <td>{{ loop.index }}</td>
-                                        <td>{{ step.page }}</td>
-                                        <td>[{{ step.frames|join(", ") }}]</td>
-                                        <td>{{ step.result }}</td>
-                                        <td>{{ step.replaced_page if step.replaced_page is not none else "-" }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                            <div class="table-wrapper monospace">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Step</th>
+                                            <th>Page</th>
+                                            <th>Frames</th>
+                                            <th>Result</th>
+                                            <th>Replaced</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for step in algorithm.result.steps %}
+                                            <tr>
+                                                <td>{{ loop.index }}</td>
+                                                <td>{{ step.page }}</td>
+                                                <td>[{{ step.frames|join(", ") }}]</td>
+                                                <td>{{ step.result }}</td>
+                                                <td>{{ step.replaced_page if step.replaced_page is not none else "-" }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
 
-                        <p>Total page faults: {{ algorithm.result.page_faults }}</p>
-                        <p>Total page hits: {{ algorithm.result.page_hits }}</p>
-                    </article>
-                {% endfor %}
+                            <div class="metrics">
+                                <p>Total page faults: <strong>{{ algorithm.result.page_faults }}</strong></p>
+                                <p>Total page hits: <strong>{{ algorithm.result.page_hits }}</strong></p>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
             {% endif %}
         </section>
     </main>
